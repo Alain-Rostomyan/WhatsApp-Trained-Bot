@@ -1,0 +1,29 @@
+# Environment variables (tokens, secrets, keys)
+.env
+
+# Node.js dependencies
+whatsapp-bot/node_modules/
+
+# WhatsApp Web session/auth cache (private and temporary)
+whatsapp-bot/.wwebjs_auth/
+whatsapp-bot/.wwebjs_cache/
+
+# Logs and runtime files
+whatsapp-bot/logs.jsonl
+
+# Python cache and Colab outputs
+__pycache__/
+.ipynb_checkpoints/
+
+# Jupyter autosave
+*.ipynb~
+
+# Raw and processed data (including exports, maps, outputs)
+data/raw/
+data/processed/
+data/**/*.txt
+data/**/*.csv
+data/**/number_map.json
+
+# Optional: Ignore package-lock if not using for consistency
+whatsapp-bot/package-lock.json
