@@ -6,9 +6,9 @@ require('dotenv').config();
 
 const MEMORY_FILE = 'memory.json';
 const LOG_FILE = 'logs.jsonl';
-const MEMORY_LIMIT = 7;
+const MEMORY_LIMIT = 5;
 const API_URL = process.env.NGROK_URL;
-const ADMIN_NUMBERS = ['+1234567890']; // Replace with actual admin numbers
+const ADMIN_NUMBERS = process.env.ADMIN_NUMBERS ? process.env.ADMIN_NUMBERS.split(',') : [];
 
 let chatMemory = {};
 
@@ -43,7 +43,7 @@ function updateMemory(chatId, userId, line) {
 function getPrompt(chatId, userId, chatTitle) {
     const memory = chatMemory[chatId]?.[userId] || [];
     const tone = getToneFromTitle(chatTitle);
-    const hour = new Date().getHours();
+    const hour = new Date().getHours() + 2;
     const timeHint = `Current time: ${hour}:00.`;
     return `[Tone: ${tone}]\n${timeHint}\n${memory.join('\n')}\nGurt:`;
 }
@@ -57,9 +57,10 @@ function getToneFromTitle(title) {
     return 'neutral';
 }
 
-function isAdmin(number) {
-    return ADMIN_NUMBERS.includes(number);
+function isAdmin(userId) {
+    return ADMIN_NUMBERS.includes(userId);
 }
+
 
 const client = new Client({
     authStrategy: new LocalAuth()
@@ -73,7 +74,8 @@ client.on('message', async msg => {
 
     const chat = await msg.getChat();
     const chatId = chat.id._serialized;
-    const userId = msg.author || msg.from;
+    const rawUserId = msg.author || msg.from;
+    const userId = rawUserId.replace(/@.*$/, ''); // Strip @c.us or @g.us
     const name = msg._data.notifyName || 'User';
     const cleanedMsg = msg.body.replace(/<This message was edited>/gi, '').trim();
     const entry = `${name}: ${cleanedMsg}`;
@@ -82,12 +84,12 @@ client.on('message', async msg => {
     if (cleanedMsg.toLowerCase() === 'gurt reset memory' && isAdmin(userId)) {
         if (chatMemory[chatId]) delete chatMemory[chatId];
         saveMemory();
-        await msg.reply('🧠 Memory reset.');
+        await msg.reply('Memory reset.');
         return;
     }
 
     if (cleanedMsg.toLowerCase() === 'gurt leave group' && isAdmin(userId) && chat.isGroup) {
-        await msg.reply('👋 Bye!');
+        await msg.reply('Ts pmo fr ima dip');
         await chat.leave();
         return;
     }

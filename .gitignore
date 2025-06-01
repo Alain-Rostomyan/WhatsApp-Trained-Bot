@@ -25,5 +25,8 @@ data/**/*.txt
 data/**/*.csv
 data/**/number_map.json
 
+# Memory
+memory.json
+
 # Optional: Ignore package-lock if not using for consistency
 whatsapp-bot/package-lock.json
