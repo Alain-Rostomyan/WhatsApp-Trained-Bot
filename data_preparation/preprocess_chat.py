@@ -29,6 +29,9 @@ system_msg_pattern = re.compile(
 )
 
 # ======= CLEANING HELPERS =======
+def strip_invalid_unicode(text):
+    return text.encode("utf-8", "replace").decode("utf-8")
+
 def parse_timestamp(date_str, time_str, am_pm):
     try:
         if am_pm:
@@ -42,9 +45,10 @@ def parse_timestamp(date_str, time_str, am_pm):
 
 def clean_text(text):
     text = unicodedata.normalize("NFKC", text).strip()
-    text = re.sub(r'@\+?\d{5,}', '', text)  # Remove @numbers
-    text = re.sub(r'https?://\S+', '', text)  # Remove URLs
-    text = re.sub(r'<This message was edited>', '', text, flags=re.IGNORECASE)  # Remove edit tags
+    text = re.sub(r"@\+?\d{5,}", "", text)  # Remove @numbers
+    text = re.sub(r"https?://\S+", "", text)  # Remove URLs
+    text = re.sub(r"<This message was edited>", "", text, flags=re.IGNORECASE)  # Remove edit tags
+    text = strip_invalid_unicode(text)
     return text.strip()
 
 def is_only_emoji(text):
@@ -85,11 +89,9 @@ with open(input_file, "r", encoding="utf-8") as file:
 
             sender = clean_text(sender)
 
-            # Track unmapped phone numbers
             if sender.startswith("+") and sender not in sender_map:
                 unmapped_senders[sender] += 1
 
-            # Apply name mapping
             sender = sender_map.get(sender, sender)
 
             current_msg = {

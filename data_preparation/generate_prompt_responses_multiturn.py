@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 import regex as re_emoji
+import re
 from collections import defaultdict
 
 # ======= FILE PATHS =======
@@ -17,6 +18,11 @@ df = pd.read_csv(input_csv)
 df = df.sort_values("timestamp").reset_index(drop=True)
 
 # ======= HELPERS =======
+def strip_invalid_unicode(text):
+    text = text.encode("utf-8", "replace").decode("utf-8")
+    return re.sub(r'[\uFE00-\uFE0F]', '', text)
+
+
 def is_only_emoji(text):
     pattern = re_emoji.compile(r"^\p{Emoji}+$", flags=re_emoji.UNICODE)
     return bool(pattern.fullmatch(text.strip()))
@@ -65,9 +71,9 @@ for i in range(context_size, len(df) - 1):
     if reply_counts[responder] >= max_per_user[responder]:
         continue
 
-    prompt_lines = [f'{row["sender"]}: {row["message"].strip()}' for _, row in context_rows.iterrows()]
+    prompt_lines = [f'{row["sender"]}: {strip_invalid_unicode(row["message"].strip())}' for _, row in context_rows.iterrows()]
     prompt = "\n".join(prompt_lines).strip()
-    response = f'Gurt: {response_row["message"].strip()}'
+    response = f'Gurt: {strip_invalid_unicode(response_row["message"].strip())}'
 
     pairs.append({
         "prompt": prompt,
