@@ -14,6 +14,7 @@ This project fine-tunes a Mistral language model on real chat history, hosts it 
 - 📝 Logs all interactions to a local file (`logs.jsonl`)
 - ☁️ Hosted in Colab via Flask + ngrok
 - 🔧 Fully customizable behavior (name-calling requirement, filters, personality)
+- 📚 Retrieval-Augmented Generation (RAG) for knowledge-grounded replies
 
 ---
 
@@ -32,8 +33,12 @@ WhatsApp Trained Bot/
 │   ├── preprocess_chat.py            # Cleans and maps chat exports
 │   └── generate_prompt_responses_multiturn.py  # Builds multi-turn training sets
 │
+├── knowledge/                        # Small text files for RAG context
+│   └── knowledge.txt
 ├── model_hosting/                    # Hosts fine-tuned model using Flask
-│   └── host_model.ipynb
+│   ├── host_model.ipynb
+│   ├── rag_retriever.py              # Simple TF-IDF retriever
+│   └── rag_server.py                 # Example Flask server with RAG
 │
 ├── model_training/                   # Fine-tuning setup for LoRA training
 │   └── train_model.ipynb
@@ -124,18 +129,20 @@ Make sure to **create your own `.env` file** using `.env.example` as a reference
 - Google Colab + GPU
 - Hugging Face account (for loading Mistral base model)
 - Ngrok account (for public URL)
+- `pip install transformers flask flask-cors scikit-learn torch`
 
 ---
 
 ## 📦 To Run the Bot
 
 1. Open `host_model.ipynb` in Colab and run all cells
-2. Copy the ngrok URL
-3. Update `bot.js` with that URL
-4. In `whatsapp-bot/`:
+2. *(Optional)* run `model_hosting/rag_server.py` for RAG-enabled replies
+3. Copy the ngrok URL
+4. Update `bot.js` with that URL
+5. In `whatsapp-bot/`:
    ```bash
    npm start
-5. Scan the QR code with Gurt's WhatsApp account
+6. Scan the QR code with Gurt's WhatsApp account
 
 ---
 

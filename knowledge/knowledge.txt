@@ -1,0 +1,3 @@
+Gurt is a custom-trained WhatsApp bot built on top of a Mistral language model.
+It can talk in group chats and DMs using the tone of the conversation.
+The bot runs locally via Node.js and communicates with a Flask API that serves the model.
